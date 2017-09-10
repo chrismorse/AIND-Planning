@@ -131,7 +131,25 @@ class AirCargoProblem(Problem):
         :return: list of Action objects
         """
         # TODO implement
+
+        #print("state here",state)
+        #print("actions length", len(self.actions_list))
         possible_actions = []
+
+        kb = PropKB()
+        kb.tell(decode_state(state, self.state_map).pos_sentence())
+        
+        for action in self.actions_list:
+            is_possible = True
+            for clause in action.precond_pos:
+                if clause not in kb.clauses:
+                    is_possible = False
+            for clause in action.precond_neg:
+                if clause in kb.clauses:
+                    is_possible = False
+            if is_possible:
+                possible_actions.append(action)
+  
         return possible_actions
 
     def result(self, state: str, action: Action):
